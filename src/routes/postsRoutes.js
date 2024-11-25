@@ -1,6 +1,6 @@
 import express from "express";
 import multer from "multer";
-import { listarPosts, postarNovoPost, uploadImagem, atualizarNovoPost } from "../controllers/postsController.js";
+import { listarPosts, postarNovoPost, uploadImagem, atualizarNovoPost, deletarPost } from "../controllers/postsController.js";
 import cors from "cors";
 
 const corsOptions = {
@@ -39,6 +39,8 @@ const routes = (app) => {
     app.post("/upload", upload.single("imagem"), uploadImagem);
 
     app.put("/upload/:id", atualizarNovoPost);
+    
+    app.delete("/posts/:id", deletarPost);
 }
 
 // Exporta as rotas para serem utilizadas em outros módulos

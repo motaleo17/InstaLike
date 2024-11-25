@@ -1,4 +1,4 @@
-import { getTodosPosts, criarPost,atualizarPost } from "../models/postsModels.js";
+import { getTodosPosts, criarPost,atualizarPost, excluirPost} from "../models/postsModels.js";
 import fs from "fs";
 import gerarDescricaoComGemini from "../services/geminiService.js";
 
@@ -65,12 +65,11 @@ export async function atualizarNovoPost(req, res) {
     const id = req.params.id;
     const urlImagem = `http://localhost:3000/${id}.png`
     try {
-        const imgBuffer = fs.readFileSync(`uploads/${id}.png`)
-        const descricao = await gerarDescricaoComGemini(imgBuffer)
-
+        //const imgBuffer = fs.readFileSync(`uploads/${id}.png`)
+        //const descricao = await gerarDescricaoComGemini(imgBuffer)
         const post = {
             imgUrl: urlImagem,
-            descricao: descricao,
+            descricao: req.body.descricao,
             alt: req.body.alt
         }
         const postCriado = await atualizarPost(id, post);
@@ -78,5 +77,29 @@ export async function atualizarNovoPost(req, res) {
     } catch(erro) {
         console.error(erro.message);
         res.status(500).json({"Erro":"Falha na requisicao"});
+    }
+}
+
+
+export async function deletarPost(req, res) {
+    const { id } = req.params; // Obtém o ID do post a ser excluído dos parâmetros da URL
+
+    try {
+        // Chama a função 'excluirPost' para remover o post do banco de dados
+        const resultado = await excluirPost(id);
+
+        // Verifica se o post foi encontrado e excluído
+        if (resultado.deletedCount === 0) {
+            return res.status(404).json({ mensagem: "Post não encontrado" });
+        }
+
+        // Retorna uma mensagem de sucesso
+        res.status(200).json({ mensagem: "Post excluído com sucesso!" });
+    } catch (erro) {
+        // Em caso de erro, imprime a mensagem de erro no console
+        console.error(erro.message);
+
+        // Retorna uma resposta de erro com status 500 (erro no servidor)
+        res.status(500).json({ erro: "Falha na exclusão do post" });
     }
 }

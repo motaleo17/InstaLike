@@ -36,3 +36,12 @@ export async function atualizarPost(id, novoPost) {
 
     return colecao.updateOne({_id: new ObjectId(objID)}, {$set:novoPost});
 }
+
+export async function excluirPost(id) {
+    const db = conexao.db("instabytes");
+    const colecao = db.collection("posts");
+    const objID = ObjectId.createFromHexString(id);
+
+    // Realiza a exclusão do documento com o ID correspondente
+    return colecao.deleteOne({ _id: objID });
+}
